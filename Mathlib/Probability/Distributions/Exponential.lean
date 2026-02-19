@@ -223,7 +223,7 @@ lemma integral_exp_mul_expMeasure (hr : 0 < r) (ht : t < r) :
         ∫ x in Ici 0, (exponentialPDF r x).toReal * exp (t * x) := by
     symm
     refine setIntegral_eq_integral_of_forall_compl_eq_zero fun x hx => ?_
-    rw [exponentialPDF_of_neg (by simpa [mem_Ici] using hx), ENNReal.toReal_zero, zero_mul]
+    simp [exponentialPDF_of_neg (by simpa [mem_Ici] using hx)]
   have hIci :
       ∫ x in Ici 0, (exponentialPDF r x).toReal * exp (t * x) =
         ∫ x in Ici 0, r * exp ((t - r) * x) := by
@@ -284,7 +284,7 @@ lemma integral_id_expMeasure (hr : 0 < r) : ∫ x, x ∂(expMeasure r) = r⁻¹ 
         ∫ x in Ici 0, (exponentialPDF r x).toReal * x := by
     symm
     refine setIntegral_eq_integral_of_forall_compl_eq_zero fun x hx => ?_
-    rw [exponentialPDF_of_neg (by simpa [mem_Ici] using hx), ENNReal.toReal_zero, zero_mul]
+    simp [exponentialPDF_of_neg (by simpa [mem_Ici] using hx)]
   have hIci :
       ∫ x in Ici 0, (exponentialPDF r x).toReal * x =
         ∫ x in Ici 0, r * (x * exp (-(r * x))) := by
@@ -310,7 +310,7 @@ private lemma integral_sq_expMeasure (hr : 0 < r) :
         ∫ x in Ici 0, (exponentialPDF r x).toReal * x ^ 2 := by
     symm
     refine setIntegral_eq_integral_of_forall_compl_eq_zero fun x hx => ?_
-    rw [exponentialPDF_of_neg (by simpa [mem_Ici] using hx), ENNReal.toReal_zero, zero_mul]
+    simp [exponentialPDF_of_neg (by simpa [mem_Ici] using hx)]
   have hIci :
       ∫ x in Ici 0, (exponentialPDF r x).toReal * x ^ 2 =
         ∫ x in Ici 0, r * (x ^ 2 * exp (-(r * x))) := by
@@ -372,10 +372,8 @@ lemma measure_Ioi_expMeasure (hr : 0 < r) {x : ℝ} (hx : 0 ≤ x) :
 lemma memoryless_expMeasure (hr : 0 < r) {s t : ℝ} (hs : 0 ≤ s) (ht : 0 ≤ t) :
     (expMeasure r) {x | x > s + t} * ((expMeasure r) {x | x > s})⁻¹ =
       (expMeasure r) {x | x > t} := by
-  rw [show {x : ℝ | x > s + t} = Ioi (s + t) by rfl,
-    show {x : ℝ | x > s} = Ioi s by rfl,
-    show {x : ℝ | x > t} = Ioi t by rfl,
-    measure_Ioi_expMeasure hr (add_nonneg hs ht),
+  change (expMeasure r) (Ioi (s + t)) * ((expMeasure r) (Ioi s))⁻¹ = (expMeasure r) (Ioi t)
+  rw [measure_Ioi_expMeasure hr (add_nonneg hs ht),
     measure_Ioi_expMeasure hr hs,
     measure_Ioi_expMeasure hr ht,
     ← ENNReal.ofReal_inv_of_pos (exp_pos _),
